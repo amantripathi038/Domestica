@@ -10,8 +10,8 @@ process.on('uncaughtException', err => {
     process.exit(1);
 });
 
-const server = app.listen(process.env.PORT, process.env.HOST, () => {
-    console.log(`Listening on http://${process.env.HOST}:${process.env.PORT}`);
+const server = app.listen(process.env.PORT, () => {
+    console.log(`Listening on PORT: ${process.env.PORT}`);
 });
 
 // Unhandled promise rejection is similar, when you fail to catch a Promise.reject.
