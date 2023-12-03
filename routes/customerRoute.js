@@ -1,4 +1,4 @@
-const { sendOTP, verifyOTP, login, getNearbyWorkers, getNearbyServices, updateName } = require('./../controllers/customerController');
+const { sendOTP, verifyOTP, login, getNearbyWorkers, getNearbyServices, updateName, getWorkerById, uploadUserImage } = require('./../controllers/customerController');
 const auth = require('./../middlewares/auth');
 
 const Router = require('express').Router();
@@ -12,9 +12,11 @@ Router.use('/', (req, res, next) => {
     next();
 }, auth.protect);
 
+Router.get('/worker', getWorkerById);
 Router.get('/nearbyWorkers', getNearbyWorkers);
 Router.get('/nearbyServices', getNearbyServices);
 
 Router.post('/updateName', updateName);
+Router.post('/updateProfile', uploadUserImage);
 
 module.exports = Router;

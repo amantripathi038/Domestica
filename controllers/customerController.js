@@ -7,6 +7,8 @@ const AppError = require('./../utils/appError');
 const removeUnwantedFields = require('../utils/removeUnwantedFields');
 const Service = require('./../models/Service');
 const TailoredService = require('../models/TailoredService');
+const formidable = require('formidable')
+const uploadToCloudinary = require('./../utils/cloudinaryUtils');
 
 module.exports.sendOTP = catchAsync(async function sendOTPandCreateOTPInstance(req, res) {
     if (await Customer.findOne({ email: req.body.email })) throw new AppError('Account already exists', 400);
@@ -41,6 +43,20 @@ module.exports.login = catchAsync(async function (req, res) {
     else throw new AppError("Invalid email or password", 401);
 })
 
+module.exports.uploadUserImage = catchAsync(async function (req, res) {
+    const form = new formidable.IncomingForm();
+    form.parse(req, async (err, fields, files) => {
+        const result = await uploadToCloudinary(files['picture'][0].filepath, 'customer', req.user._id);
+        req.user.photo = result.url;
+        req.user.save();
+        res.status(201).json({
+            status: 'success',
+            message: 'Profile picture updated successfully',
+            photo: result.url
+        })
+    })
+})
+
 module.exports.updateName = catchAsync(async function (req, res) {
     req.user.name = req.body.newName;
     req.user.save();
@@ -49,6 +65,19 @@ module.exports.updateName = catchAsync(async function (req, res) {
         message: "Name successfully updated.",
         name: req.user.name
     })
+})
+
+module.exports.getWorkerById = catchAsync(async function (req, res) {
+    const worker = await Worker.findById(req.query.workerId).populate('services');
+    if (worker) {
+        return res.status(200).json({
+            status: 'success',
+            data: {
+                worker
+            }
+        })
+    }
+    else throw new AppError("Worker not found", 401);
 })
 
 module.exports.getNearbyWorkers = catchAsync(async function (req, res, next) {
