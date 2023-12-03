@@ -30,7 +30,7 @@ module.exports.verifyOTP = catchAsync(async function verifyOTP(req, res) {
 
 module.exports.login = catchAsync(async function (req, res) {
     const { email, password } = req.body;
-    const user = await Worker.findOne({ email: email }).select('+password');
+    const user = await Worker.findOne({ email: email }).select('+password').populate('services');
     if (user?.comparePassword(password)) {
         jwtMethods.createAndSendJWTToken(res, user);
     }
