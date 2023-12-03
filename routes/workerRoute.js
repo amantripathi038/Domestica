@@ -1,4 +1,4 @@
-const { sendOTP, verifyOTP, login } = require('./../controllers/workerController');
+const { sendOTP, verifyOTP, login, uploadUserImage } = require('./../controllers/workerController');
 const auth = require('./../middlewares/auth')
 
 const serviceRoute = require('./serviceRoute')
@@ -13,6 +13,9 @@ Router.use('/', (req, res, next) => {
     next();
 }, auth.protect);
 
+Router.post('/updateProfile', uploadUserImage);
+
 Router.use('/service', serviceRoute);
+
 
 module.exports = Router;
