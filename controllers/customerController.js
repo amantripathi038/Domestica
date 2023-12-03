@@ -5,6 +5,8 @@ const catchAsync = require('./../utils/catchAsync');
 const jwtMethods = require('./../utils/jwtMethods');
 const AppError = require('./../utils/appError');
 const removeUnwantedFields = require('../utils/removeUnwantedFields');
+const Service = require('./../models/Service');
+const TailoredService = require('../models/TailoredService');
 
 module.exports.sendOTP = catchAsync(async function sendOTPandCreateOTPInstance(req, res) {
     if (await Customer.findOne({ email: req.body.email })) throw new AppError('Account already exists', 400);
@@ -63,10 +65,24 @@ module.exports.getNearbyWorkers = catchAsync(async function (req, res, next) {
 module.exports.getNearbyServices = catchAsync(async function (req, res, next) {
     const distance = req.query.distance * 1 || 5; // In Kilometers
     const lnglat = req.user.currentLocation.coordinates;
-    const nearbyServices = await Worker.getNearbyServices(distance, lnglat);
+    const serviceType = req.query.serviceType;
+    const nearbyServices = await Service.getNearbyServices(distance, lnglat, serviceType);
     res.status(200).json({
         status: 'success',
         length: nearbyServices.length,
         data: nearbyServices
     });
+})
+
+module.exports.createTailoredService = catchAsync(async function (req, res, res) {
+    delete req.body.numberOfViews; delete req.body.featured;
+    req.body.customerId = req.user._id;
+    req.body.location = req.user.currentLocation;
+    const tailoredService = await TailoredService.create(req.body);
+    req.user?.tailoredServices.push(tailoredService._id);
+    await req.user?.save();
+    res.status(201).json({
+        message: 'Service created successfully',
+        service: tailoredService
+    })
 })

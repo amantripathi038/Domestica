@@ -12,9 +12,9 @@ app.use(express.json());
 app.use(cors());
 
 // Development logging
-if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
-}
+// if (process.env.NODE_ENV === 'development') {
+app.use(morgan('dev'));
+// }
 
 app.get('/', (req, res, next) => {
     res.send("Server is working fine.");

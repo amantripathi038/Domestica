@@ -65,7 +65,11 @@ const customerSchema = mongoose.Schema({
             type: String,
             default: ""
         }
-    }
+    },
+    tailoredServices: [{
+        type: mongoose.Schema.ObjectId,
+        ref: 'TailoredService'
+    }]
 }, { timestamps: true });
 
 //Hash Password

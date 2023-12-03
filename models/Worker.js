@@ -106,33 +106,6 @@ workerSchema.statics.getNearbyWorkers = async function (distance, lnglat) {
     }).select('-password -createdAt -updatedAt -__v');
 }
 
-workerSchema.statics.getNearbyServices = async function (distance, lnglat) {
-    return this.aggregate([
-        {
-            $geoNear: {
-                near: { type: "Point", coordinates: lnglat },
-                distanceField: "distance",
-                maxDistance: distance * 1000, // Convert distance to meters
-                spherical: true
-            }
-        },
-        {
-            $project: {
-                services: 1,
-                distance: 1
-            }
-        },
-        {
-            $lookup: {
-                from: "services", // Replace with the actual name of the services collection
-                localField: "services",
-                foreignField: "_id",
-                as: "services"
-            }
-        }
-    ]);
-}
-
 const Worker = mongoose.model('Worker', workerSchema);
 
 module.exports = Worker;

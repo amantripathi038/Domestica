@@ -18,6 +18,7 @@ module.exports.getServicesOfWorker = catchAsync(async function (req, res, next) 
 module.exports.createServiceOfWorker = catchAsync(async function (req, res, next) {
     delete req.body.numberOfViews; delete req.body.featured;
     req.body.workerId = req.user._id;
+    req.body.location = req.user.currentLocation;
     const service = await Service.create(req.body);
     req.user?.services.push(service._id);
     await req.user?.save();
