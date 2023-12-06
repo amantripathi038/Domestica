@@ -17,8 +17,8 @@ module.exports.sendOTP = catchAsync(async function sendOTPandCreateOTPInstance(r
     res.status(200).json({
         message: 'OTP sent successfully',
         token: jwtMethods.getJWTToken({ email: user.email, contact: user.contact }, 300 * 1000)
-    })
-})
+    });
+});
 
 module.exports.verifyOTP = catchAsync(async function verifyOTP(req, res) {
     const token = req.headers?.authorization?.split(' ')[1];
@@ -41,7 +41,7 @@ module.exports.login = catchAsync(async function (req, res) {
         jwtMethods.createAndSendJWTToken(res, user);
     }
     else throw new AppError("Invalid email or password", 401);
-})
+});
 
 module.exports.uploadUserImage = catchAsync(async function (req, res) {
     const form = new formidable.IncomingForm();
@@ -53,19 +53,9 @@ module.exports.uploadUserImage = catchAsync(async function (req, res) {
             status: 'success',
             message: 'Profile picture updated successfully',
             photo: result.url
-        })
-    })
-})
-
-module.exports.updateName = catchAsync(async function (req, res) {
-    req.user.name = req.body.newName;
-    req.user.save();
-    removeUnwantedFields(req.user);
-    res.status(200).json({
-        message: "Name successfully updated.",
-        name: req.user.name
-    })
-})
+        });
+    });
+});
 
 module.exports.getWorkerById = catchAsync(async function (req, res) {
     const worker = await Worker.findById(req.query.workerId).populate('services');
@@ -78,7 +68,7 @@ module.exports.getWorkerById = catchAsync(async function (req, res) {
         })
     }
     else throw new AppError("Worker not found", 401);
-})
+});
 
 module.exports.getNearbyWorkers = catchAsync(async function (req, res, next) {
     const distance = req.query.distance * 1 || 5; // In Kilometers
@@ -89,7 +79,7 @@ module.exports.getNearbyWorkers = catchAsync(async function (req, res, next) {
         length: nearbyWorkers.length,
         data: nearbyWorkers
     });
-})
+});
 
 module.exports.getNearbyServices = catchAsync(async function (req, res, next) {
     const distance = req.query.distance * 1 || 5; // In Kilometers
@@ -101,7 +91,7 @@ module.exports.getNearbyServices = catchAsync(async function (req, res, next) {
         length: nearbyServices.length,
         data: nearbyServices
     });
-})
+});
 
 module.exports.createTailoredService = catchAsync(async function (req, res, res) {
     delete req.body.numberOfViews; delete req.body.featured;
@@ -111,7 +101,8 @@ module.exports.createTailoredService = catchAsync(async function (req, res, res)
     req.user?.tailoredServices.push(tailoredService._id);
     await req.user?.save();
     res.status(201).json({
+        status: 'success',
         message: 'Service created successfully',
         service: tailoredService
-    })
-})
+    });
+});

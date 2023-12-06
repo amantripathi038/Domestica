@@ -19,8 +19,8 @@ module.exports.protect = catchAsync(async (req, res, next) => {
 
     // 3) Check if user still exists
     let currentUser;
-    if (req.userType === 'customer') currentUser = await Customer.findById(_id);
-    else if (req.userType === 'worker') currentUser = await Worker.findById(_id);
+    if (req.userType === 'customer') currentUser = await Customer.findById(_id)?.populate('tailoredServices');
+    else if (req.userType === 'worker') currentUser = await Worker.findById(_id)?.populate('services');
     else return next(new AppError('Invalid user type', 401));
 
     if (!currentUser) {
